@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Articon — Parchment variant: cream bg, terracotta book, gold star -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="#FDF6EE"/>
+  <!-- Subtle border -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="none" stroke="#E8D5BF" stroke-width="2"/>
+
+  <!-- Left page -->
+  <rect x="14" y="30" width="40" height="66" rx="6" fill="none" stroke="#C2522B" stroke-width="3"/>
+  <line x1="34" y1="30" x2="34" y2="96" stroke="#C2522B" stroke-width="2"/>
+
+  <!-- Right page -->
+  <rect x="74" y="30" width="40" height="66" rx="6" fill="none" stroke="#C2522B" stroke-width="3"/>
+  <line x1="94" y1="30" x2="94" y2="96" stroke="#C2522B" stroke-width="2"/>
+
+  <!-- Text lines left page -->
+  <rect x="19" y="44" width="11" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+  <rect x="19" y="54" width="11" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+  <rect x="19" y="64" width="9" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+
+  <!-- Text lines right page -->
+  <rect x="79" y="44" width="11" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+  <rect x="79" y="54" width="11" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+  <rect x="79" y="64" width="9" height="4" rx="2" fill="#C2522B" opacity="0.45"/>
+
+  <!-- Star / AI spark — top right -->
+  <polygon points="104,14 107,22 115,25 107,28 104,36 101,28 93,25 101,22" fill="#D97706"/>
+</svg>

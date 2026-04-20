@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Articon — Vivid variant: hot pink-coral bg (shifted from red), white book, bright yellow star -->
+
+  <!-- Background — hue shifted toward pink-orange to avoid red badge confusion -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="#FF4D80"/>
+
+  <!-- Left page -->
+  <rect x="14" y="30" width="40" height="66" rx="6" fill="none" stroke="white" stroke-width="3"/>
+  <line x1="34" y1="30" x2="34" y2="96" stroke="white" stroke-width="2"/>
+
+  <!-- Right page -->
+  <rect x="74" y="30" width="40" height="66" rx="6" fill="none" stroke="white" stroke-width="3"/>
+  <line x1="94" y1="30" x2="94" y2="96" stroke="white" stroke-width="2"/>
+
+  <!-- Text lines left page -->
+  <rect x="19" y="44" width="11" height="4" rx="2" fill="white" opacity="0.65"/>
+  <rect x="19" y="54" width="11" height="4" rx="2" fill="white" opacity="0.65"/>
+  <rect x="19" y="64" width="9" height="4" rx="2" fill="white" opacity="0.65"/>
+
+  <!-- Text lines right page -->
+  <rect x="79" y="44" width="11" height="4" rx="2" fill="white" opacity="0.65"/>
+  <rect x="79" y="54" width="11" height="4" rx="2" fill="white" opacity="0.65"/>
+  <rect x="79" y="64" width="9" height="4" rx="2" fill="white" opacity="0.65"/>
+
+  <!-- Star / AI spark — top right -->
+  <polygon points="104,14 107,22 115,25 107,28 104,36 101,28 93,25 101,22" fill="#FEF08A"/>
+</svg>

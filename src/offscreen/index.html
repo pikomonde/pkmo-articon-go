@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Articon embedder</title>
+  </head>
+  <body>
+    <!--
+      Invisible page. Its only job is to host Transformers.js in a context
+      that has a real DOM / `window`, which the MV3 background service worker
+      does NOT have. The service worker relays embedding work here.
+    -->
+    <script type="module" src="./embedder.ts"></script>
+  </body>
+</html>
