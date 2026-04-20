@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #faf9f7;
+  --surface: #f3f1ee;
+  --border: #e4e2de;
+  --accent: #5b4fcf;
+  --text: #1c1c1e;
+  --text-muted: #6b6b7a;
+  --text-dim: #9999a8;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --content-width: 680px;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Loading / error states */
+.reader-loading,
+.reader-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+  text-align: center;
+  padding: 32px;
+}
+
+.reader-error h2 {
+  font-size: 22px;
+  font-family: var(--font-serif);
+  color: var(--text);
+}
+
+.reader-error p { font-size: 14px; max-width: 400px; line-height: 1.6; }
+
+.reader-error button {
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Header */
+.reader-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(250, 249, 247, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.reader-logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.back-btn:hover { color: var(--text); background: var(--surface); }
+
+.source-link {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.source-link:hover { color: var(--accent); background: var(--surface); }
+
+/* Main content */
+.reader-main {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+}
+
+.reader-article {}
+
+.reader-title {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.reader-byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.reader-byline > * {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.reader-byline > *:not(:last-child)::after {
+  content: '·';
+  margin-left: 8px;
+  color: var(--text-dim);
+}
+
+.reader-author { font-weight: 600; color: var(--text); }
+
+.reader-source {
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  transition: color 0.15s;
+}
+
+.reader-source:hover { color: var(--accent); }
+
+.reader-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 36px;
+}
+
+/* Article body */
+.reader-body {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.reader-body p {
+  margin-bottom: 1.4em;
+}
+
+.reader-body p:last-child { margin-bottom: 0; }
+
+/* Footer */
+.reader-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.reader-footer-meta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f11;
+    --surface: #1a1a1f;
+    --border: #2a2a32;
+    --text: #e8e8ee;
+    --text-muted: #888896;
+    --text-dim: #4a4a5a;
+  }
+
+  .reader-header {
+    background: rgba(15, 15, 17, 0.92);
+  }
+}
