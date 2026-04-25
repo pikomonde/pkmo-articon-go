@@ -15,6 +15,7 @@ export default defineConfig({
         sidebar: 'src/sidebar/index.html',
         reader: 'src/reader/index.html',
         onboarding: 'src/onboarding/index.html',
+        offscreen: 'src/offscreen/index.html',
       },
     },
   },

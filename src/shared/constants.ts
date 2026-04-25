@@ -27,7 +27,7 @@ export const LLM_DEFAULTS: Record<string, { model: string; baseUrl?: string }> =
 
 // Model name placeholder hints shown in the onboarding input
 export const MODEL_HINTS: Record<string, string> = {
-  gemini: 'e.g. gemini-2.0-flash, gemini-2.5-flash',
+  gemini: 'e.g. gemini-2.0-flash, gemini-2.5-pro, gemma-4-31b-it',
   openai: 'e.g. gpt-4o-mini, gpt-4o',
   groq:   'e.g. llama-3.3-70b-versatile, mixtral-8x7b-32768',
 };

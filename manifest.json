@@ -48,7 +48,8 @@
     "tabs",
     "activeTab",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "offscreen"
   ],
   "host_permissions": [
     "<all_urls>"

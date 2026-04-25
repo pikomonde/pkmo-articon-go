@@ -44,8 +44,10 @@ export async function generateAndSaveEmbedding(
   articleId: string,
   content: string
 ): Promise<void> {
-  const textToEmbed = content.slice(0, MAX_ARTICLE_CHUNK_LENGTH * 3);
+  const textToEmbed = content.slice(0, MAX_ARTICLE_CHUNK_LENGTH * 9);
+  console.log("----> textToEmbed", textToEmbed)
   const vector = await embedText(textToEmbed);
+  console.log("----> vector", vector)
 
   const db = await getDB();
   const embedding: Embedding = { articleId, vector };

@@ -1,8 +1,9 @@
 import { saveArticle, articleExistsByUrl } from '../core/storage/articles';
-import { generateAndSaveEmbedding } from '../core/rag/embeddings';
 import { isOnboardingComplete } from '../core/storage/settings';
 import { ONBOARDING_PATH, READER_PATH } from '../shared/constants';
 import type { ExtensionMessage, ExtractedArticle } from '../shared/types';
+
+const OFFSCREEN_PATH = 'src/offscreen/index.html';
 
 // Explicitly disable "open sidebar on icon click" so the popup takes over.
 // The sidebar is opened via the "Open Sidebar" button inside the popup.
@@ -10,7 +11,45 @@ chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: false })
   .catch(console.error);
 
-// Handle messages from popup, content scripts, and sidebar
+// --- Offscreen document: hosts Transformers.js (needs a DOM/window) --------
+
+let offscreenCreating: Promise<void> | null = null;
+
+async function ensureOffscreenDocument(): Promise<void> {
+  if (await chrome.offscreen.hasDocument()) return;
+  // De-dupe concurrent creates (createDocument throws if one is already pending).
+  if (!offscreenCreating) {
+    offscreenCreating = chrome.offscreen
+      .createDocument({
+        url: OFFSCREEN_PATH,
+        reasons: [chrome.offscreen.Reason.WORKERS],
+        justification: 'Run Transformers.js locally to generate article embeddings.',
+      })
+      .finally(() => {
+        offscreenCreating = null;
+      });
+  }
+  await offscreenCreating;
+}
+
+// Send a message to the offscreen doc, retrying until its listener is ready.
+// (createDocument resolves before the module script finishes evaluating.)
+async function sendToOffscreen(message: object, retries = 6): Promise<unknown> {
+  await ensureOffscreenDocument();
+  let lastErr: unknown;
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await chrome.runtime.sendMessage(message);
+    } catch (err) {
+      lastErr = err; // "Receiving end does not exist" while the doc boots
+      await new Promise((r) => setTimeout(r, 150));
+    }
+  }
+  throw lastErr ?? new Error('Offscreen document did not respond');
+}
+
+// --- Message routing -------------------------------------------------------
+
 chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendResponse) => {
   handleMessage(message, sender, sendResponse);
   return true; // Keep message channel open for async response
@@ -24,7 +63,6 @@ async function handleMessage(
   try {
     switch (message.type) {
       case 'EXTRACT_ARTICLE': {
-        // Ask content script on the active tab to extract article
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab.id) {
           sendResponse({ error: 'No active tab' });
@@ -37,7 +75,6 @@ async function handleMessage(
 
       case 'SAVE_ARTICLE': {
         const { projectId } = message;
-        // Get the active tab's extracted article
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab.id) {
           sendResponse({ error: 'No active tab' });
@@ -78,10 +115,14 @@ async function handleMessage(
           publishedAt: extracted.publishedAt,
         });
 
-        // Generate embedding in background (non-blocking for popup)
-        generateAndSaveEmbedding(article.id, article.content).catch((err) =>
-          console.error('Embedding generation failed:', err)
-        );
+        // Generate embedding in the OFFSCREEN document (it has a DOM/window).
+        // Fire-and-forget so the popup gets a fast response.
+        sendToOffscreen({
+          target: 'offscreen',
+          type: 'EMBED_AND_SAVE',
+          articleId: article.id,
+          content: article.content,
+        }).catch((err) => console.error('Embedding generation failed:', err));
 
         sendResponse({ success: true, article });
         break;
@@ -110,7 +151,8 @@ async function handleMessage(
   }
 }
 
-// Check onboarding on install
+// --- Lifecycle: onboarding + auto-heal missing embeddings ------------------
+
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     const complete = await isOnboardingComplete();
@@ -119,4 +161,16 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       chrome.tabs.create({ url: onboardingUrl });
     }
   }
+  // Re-embed any articles that were saved before this fix landed.
+  backfillEmbeddings();
 });
+
+chrome.runtime.onStartup.addListener(() => {
+  backfillEmbeddings();
+});
+
+function backfillEmbeddings() {
+  sendToOffscreen({ target: 'offscreen', type: 'BACKFILL_EMBEDDINGS' }).catch((err) =>
+    console.error('Backfill failed:', err)
+  );
+}
