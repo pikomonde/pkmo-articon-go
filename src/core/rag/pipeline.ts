@@ -36,23 +36,18 @@ export async function runChatPipeline(
     { role: 'user' as const, content: userInput },
   ];
 
-  console.log("---> 1.A queryMessages", queryMessages);
 
   let searchQuery: string;
   try {
     searchQuery = (await complete(queryMessages)).trim();
-    console.log("---> 1.B searchQuery A", searchQuery);
   } catch {
     // Fallback: use the user's message directly as the search query
     searchQuery = userInput;
-    console.log("---> 1.C searchQuery B", searchQuery);
   }
 
   // Step 2: RAG search
   const results = await searchArticles(searchQuery, projectId);
   const context = formatContextForLLM(results);
-  console.log("---> 2.A results", results);
-  console.log("---> 2.B context", context);
 
   // Step 3: Generate final answer with retrieved context
   const answerMessages = [
@@ -63,7 +58,6 @@ export async function runChatPipeline(
       content: `${userInput}\n\n---\nRelevant articles from your collection:\n${context}`,
     },
   ];
-  console.log("---> 3.A answerMessages", answerMessages);
 
   const answer = await complete(answerMessages);
 
