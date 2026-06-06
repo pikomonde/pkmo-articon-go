@@ -32,10 +32,11 @@ export async function getAllArticles(): Promise<Article[]> {
 
 export async function deleteArticle(id: string): Promise<void> {
   const db = await getDB();
+  const chunkKeys = await db.getAllKeysFromIndex(STORES.EMBEDDINGS, 'by_article', id);
   const tx = db.transaction([STORES.ARTICLES, STORES.EMBEDDINGS], 'readwrite');
   await Promise.all([
     tx.objectStore(STORES.ARTICLES).delete(id),
-    tx.objectStore(STORES.EMBEDDINGS).delete(id),
+    ...chunkKeys.map((k) => tx.objectStore(STORES.EMBEDDINGS).delete(k)),
     tx.done,
   ]);
 }

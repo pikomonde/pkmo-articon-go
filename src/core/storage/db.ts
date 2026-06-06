@@ -15,6 +15,7 @@ interface ArticonDBSchema extends DBSchema {
   [STORES.EMBEDDINGS]: {
     key: string;
     value: Embedding;
+    indexes: { by_article: string };
   };
   [STORES.CHAT_MESSAGES]: {
     key: string;
@@ -33,7 +34,7 @@ export async function getDB(): Promise<IDBPDatabase<ArticonDBSchema>> {
   if (dbInstance) return dbInstance;
 
   dbInstance = await openDB<ArticonDBSchema>(DB_NAME, DB_VERSION, {
-    upgrade(db) {
+    upgrade(db, oldVersion) {
       // Projects store
       if (!db.objectStoreNames.contains(STORES.PROJECTS)) {
         db.createObjectStore(STORES.PROJECTS, { keyPath: 'id' });
@@ -45,9 +46,18 @@ export async function getDB(): Promise<IDBPDatabase<ArticonDBSchema>> {
         articleStore.createIndex('by_project', 'projectId');
       }
 
-      // Embeddings store keyed by articleId
+      // // Embeddings store keyed by articleId
+      // if (!db.objectStoreNames.contains(STORES.EMBEDDINGS)) {
+      //   db.createObjectStore(STORES.EMBEDDINGS, { keyPath: 'articleId' });
+      // }
+      // Embeddings: v1 was one record per article (keyPath 'articleId').
+      // v2 is one record per chunk (keyPath 'id'). Drop & rebuild via backfill.
+      if (oldVersion < 2 && db.objectStoreNames.contains(STORES.EMBEDDINGS)) {
+        db.deleteObjectStore(STORES.EMBEDDINGS);
+      }
       if (!db.objectStoreNames.contains(STORES.EMBEDDINGS)) {
-        db.createObjectStore(STORES.EMBEDDINGS, { keyPath: 'articleId' });
+        const store = db.createObjectStore(STORES.EMBEDDINGS, { keyPath: 'id' });
+        store.createIndex('by_article', 'articleId');
       }
 
       // Chat messages with projectId and timestamp indexes

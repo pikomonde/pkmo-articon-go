@@ -1,7 +1,7 @@
 // Articon — Shared Constants
 
 export const DB_NAME = 'articon-db';
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 // IndexedDB store names
 export const STORES = {
@@ -15,8 +15,12 @@ export const STORES = {
 // RAG configuration
 export const RAG_TOP_K = 3;                      // Number of chunks to retrieve
 export const MAX_CHAT_HISTORY = 10;              // Sliding window size
-export const EMBEDDING_MODEL = 'Xenova/all-MiniLM-L6-v2';  // ~23MB, fast, good quality
-export const MAX_ARTICLE_CHUNK_LENGTH = 2000;    // Characters per chunk for embedding
+export const EMBEDDING_MODEL = 'Xenova/all-MiniLM-L6-v2';  // ~23MB, fast, good quality, max 256 words
+
+// Chunking — all-MiniLM-L6-v2 truncates at 256 tokens (~190 words),
+// so keep chunks safely under that.
+export const CHUNK_WORDS = 200;        // ~230–260 tokens
+export const CHUNK_OVERLAP_WORDS = 40; // ~20% overlap for continuity
 
 // LLM provider defaults — model name is just a suggestion, user can override in onboarding
 export const LLM_DEFAULTS: Record<string, { model: string; baseUrl?: string }> = {

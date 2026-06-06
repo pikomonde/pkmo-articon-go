@@ -18,8 +18,11 @@ export interface Article {
 }
 
 export interface Embedding {
+  id: string;          // `${articleId}::${chunkIndex}`
   articleId: string;
-  vector: number[];      // float32 array from Transformers.js
+  chunkIndex: number;
+  text: string;        // the chunk text this vector represents
+  vector: number[];    // float32 array from Transformers.js
 }
 
 export interface ChatMessage {
