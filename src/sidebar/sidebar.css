@@ -12,7 +12,7 @@
   --accent-hover: #9182f9;
   --text: #e4e4ec;
   --text-muted: #7a7a8c;
-  --text-dim: #4a4a5a;
+  --text-dim: #9999a8;
   --success: #4ade80;
   --error: #f87171;
   --radius: 8px;
@@ -180,7 +180,7 @@ html, body, #root {
   border-radius: 3px;
   transition: color 0.15s, background 0.15s;
   flex-shrink: 0;
-  opacity: 0;
+  /* opacity: 0; */
 }
 
 .icon-btn-sm.danger:hover { color: var(--error); background: rgba(248, 113, 113, 0.1); }
