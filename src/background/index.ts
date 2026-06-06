@@ -7,9 +7,9 @@ const OFFSCREEN_PATH = 'src/offscreen/index.html';
 
 // Explicitly disable "open sidebar on icon click" so the popup takes over.
 // The sidebar is opened via the "Open Sidebar" button inside the popup.
-chrome.sidePanel
-  .setPanelBehavior({ openPanelOnActionClick: false })
-  .catch(console.error);
+// chrome.sidePanel
+//   .setPanelBehavior({ openPanelOnActionClick: false })
+//   .catch(console.error);
 
 // --- Offscreen document: hosts Transformers.js (needs a DOM/window) --------
 

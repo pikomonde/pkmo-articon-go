@@ -63,12 +63,17 @@ function Popup() {
   }
 
   async function handleOpenSidebar() {
+    // --- SIDE PANEL (needs Chrome 114+, not available on Windows 7) ---
     // chrome.sidePanel.open() must be called directly in the popup
     // (user gesture context). Routing through background loses the gesture.
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab.windowId) {
-      await chrome.sidePanel.open({ windowId: tab.windowId });
-    }
+    // const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    // if (tab.windowId) {
+    //   await chrome.sidePanel.open({ windowId: tab.windowId });
+    // }
+    // window.close();
+
+    // Open the same UI as a full page instead — works on all Chrome + Firefox
+    await chrome.tabs.create({ url: chrome.runtime.getURL('src/sidebar/index.html') });
     window.close();
   }
 
