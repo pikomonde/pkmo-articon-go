@@ -1,3 +1,4 @@
+import { downloadProjectAsZip } from '../../core/export/projectExport';
 import { useState, useEffect, useCallback } from 'react';
 import { getAllProjects, createProject, renameProject, deleteProject } from '../../core/storage/projects';
 import type { Project } from '../../shared/types';
@@ -53,6 +54,16 @@ export function ProjectList({ selectedProject, onSelectProject }: Props) {
     await load();
   }
 
+  async function handleDownload(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    try {
+      const count = await downloadProjectAsZip(id);
+      if (count === 0) alert('This project has no articles to download.');
+    } catch (err) {
+      alert(`Download failed: ${String(err)}`);
+    }
+  }
+
   return (
     <div className="panel panel-projects">
       <div className="panel-header">
@@ -95,6 +106,13 @@ export function ProjectList({ selectedProject, onSelectProject }: Props) {
                 <span className="project-icon">📁</span>
                 <span className="project-name">{p.name}</span>
                 <div className="project-actions">
+                  <button
+                    className="icon-btn-sm"
+                    title="Download as ZIP"
+                    onClick={(e) => handleDownload(p.id, e)}
+                  >
+                    ⬇
+                  </button>
                   <button
                     className="icon-btn-sm"
                     title="Rename"
