@@ -110,6 +110,7 @@ async function handleMessage(
           projectId,
           title: extracted.title || tab.title || 'Untitled',
           content: extracted.content,
+          markdown: extracted.markdown,
           url: extracted.url,
           author: extracted.author,
           publishedAt: extracted.publishedAt,

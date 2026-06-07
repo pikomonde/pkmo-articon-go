@@ -11,6 +11,7 @@ export interface Article {
   projectId: string;
   title: string;
   content: string;       // clean text from Readability.js
+  markdown: string;      // markdown for reader + download
   url: string;
   author?: string;
   savedAt: number;
@@ -79,6 +80,7 @@ export type ExtensionMessage =
 export interface ExtractedArticle {
   title: string;
   content: string;
+  markdown: string;
   url: string;
   author?: string;
   publishedAt?: number;

@@ -1,5 +1,12 @@
 import { Readability } from '@mozilla/readability';
+import TurndownService from 'turndown';
 import type { ExtractedArticle } from '../shared/types';
+
+// Configure once at module level, reused for every extraction
+const turndown = new TurndownService({
+  codeBlockStyle: 'fenced',
+  headingStyle: 'atx',
+});
 
 export function extractArticle(): ExtractedArticle | null {
   try {
@@ -9,6 +16,19 @@ export function extractArticle(): ExtractedArticle | null {
     const parsed = reader.parse();
 
     if (!parsed) return null;
+
+    // Convert the cleaned HTML to Markdown for reader mode + download.
+    // Falls back to plain text if Readability didn't return HTML.
+    let markdown = '';
+    if (parsed.content) {
+      try {
+        markdown = turndown.turndown(parsed.content);
+      } catch {
+        markdown = parsed.textContent ?? '';
+      }
+    } else {
+      markdown = parsed.textContent ?? '';
+    }
 
     // Try to extract publish date from meta tags
     let publishedAt: number | undefined;
@@ -33,7 +53,8 @@ export function extractArticle(): ExtractedArticle | null {
 
     return {
       title: parsed.title ?? '',
-      content: parsed.textContent ?? '',
+      content: parsed.textContent ?? '',  // plain text → chunking & embedding
+      markdown,                           // markdown → reader mode & download
       url: window.location.href,
       author,
       publishedAt,
