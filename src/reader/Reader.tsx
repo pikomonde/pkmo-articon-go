@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getArticle } from '../core/storage/articles';
 import type { Article } from '../shared/types';
 import './reader.css';
@@ -59,8 +61,8 @@ function Reader() {
     return <div className="reader-loading">Loading article…</div>;
   }
 
-  // Render content preserving paragraphs
-  const paragraphs = article.content
+  // Fallback for older articles saved before markdown existed.
+  const legacyParagraphs = article.content
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean);
@@ -107,9 +109,20 @@ function Reader() {
           <div className="reader-divider" />
 
           <div className="reader-body">
-            {paragraphs.map((paragraph, i) => (
-              <p key={i}>{paragraph}</p>
-            ))}
+            {article.markdown ? (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: (props) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+              >
+                {article.markdown}
+              </ReactMarkdown>
+            ) : (
+              legacyParagraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
+            )}
           </div>
 
           <footer className="reader-footer">
