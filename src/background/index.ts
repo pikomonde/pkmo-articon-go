@@ -2,6 +2,7 @@ import { saveArticle, articleExistsByUrl } from '../core/storage/articles';
 import { isOnboardingComplete } from '../core/storage/settings';
 import { ONBOARDING_PATH, READER_PATH } from '../shared/constants';
 import type { ExtensionMessage, ExtractedArticle } from '../shared/types';
+import contentScript from '../content/index?script';
 
 const OFFSCREEN_PATH = 'src/offscreen/index.html';
 
@@ -63,30 +64,40 @@ async function handleMessage(
   try {
     switch (message.type) {
       case 'EXTRACT_ARTICLE': {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab.id) {
+        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        if (!tab?.id) {
           sendResponse({ error: 'No active tab' });
           return;
         }
+        await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: [contentScript] });
         const result = await chrome.tabs.sendMessage(tab.id, { type: 'EXTRACT_ARTICLE' });
         sendResponse(result);
         break;
       }
 
       case 'SAVE_ARTICLE': {
-        const { projectId } = message;
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab.id) {
-          sendResponse({ error: 'No active tab' });
+        const { projectId, tabId } = message;
+        let tab: chrome.tabs.Tab | undefined;
+        if (tabId != null) {
+          tab = await chrome.tabs.get(tabId);
+        } else {
+          [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        }
+        if (!tab?.id) {
+          sendResponse({ error: 'No active tab found. Buka halaman web dulu.' });
           return;
         }
 
         // Guard: content script might not be injected yet (e.g. tab was open
         // before the extension loaded). Ask user to refresh the page.
-        let extracted: ExtractedArticle;
+        let extracted: ExtractedArticle | null;
         try {
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: [contentScript], // on-demand injection
+          });
           extracted = await chrome.tabs.sendMessage(tab.id, { type: 'EXTRACT_ARTICLE' });
-        } catch {
+        } catch (err) {
           sendResponse({
             error: 'Could not reach the page. Please refresh the tab (F5) and try again.',
           });
@@ -130,8 +141,8 @@ async function handleMessage(
       }
 
       case 'OPEN_SIDEBAR': {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (tab.windowId) {
+        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        if (tab?.windowId) {
           await chrome.sidePanel.open({ windowId: tab.windowId });
         }
         sendResponse({ success: true });

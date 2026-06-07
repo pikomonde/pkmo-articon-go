@@ -60,6 +60,7 @@ export interface ExtractArticleMessage {
 export interface SaveArticleMessage {
   type: 'SAVE_ARTICLE';
   projectId: string;
+  tabId?: number;
 }
 
 export interface OpenReaderMessage {

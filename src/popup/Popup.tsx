@@ -41,9 +41,18 @@ function Popup() {
     setMessage('Extracting article…');
 
     try {
+      // Get active tab here
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) {
+        setStatus('error');
+        setMessage('No active tab found. Buka halaman web dulu lalu coba lagi.');
+        return;
+      }
+
       const response = await chrome.runtime.sendMessage({
         type: 'SAVE_ARTICLE',
         projectId: selectedProjectId,
+        tabId: tab.id, // send tab id to the background
       });
 
       if (response?.error) {
