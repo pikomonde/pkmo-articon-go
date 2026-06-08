@@ -134,7 +134,7 @@ src/
 
 ## Contributing
 
-This project is open source under the MIT License. Issues and PRs welcome.
+This project is open source under the Apache 2.0 License. Issues and PRs welcome.
 
 ---
 
